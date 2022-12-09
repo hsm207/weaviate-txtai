@@ -15,7 +15,7 @@ classifiers = [
 ]
 
 [tool.poetry.dependencies]
-python = "^3.11"
+python = "^3.8"
 weaviate-client = "^3.9.0"
 txtai = {extras = ["api"], version = "^5.1.0"}
 
