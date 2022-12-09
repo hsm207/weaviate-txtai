@@ -7,7 +7,7 @@
 		"ghcr.io/devcontainers/features/docker-in-docker:2": {},
 		"ghcr.io/devcontainers-contrib/features/poetry:1": {}
 	},
-	"extensions": ["humao.rest-client", "ms-python.python", "ms-python.black-formatter"],
+	"extensions": ["humao.rest-client", "ms-python.python", "ms-python.black-formatter", "eamodio.gitlens"],
 	"runArgs": ["--env-file",".devcontainer/devcontainer.env"],
 	"mounts": [
 		{
