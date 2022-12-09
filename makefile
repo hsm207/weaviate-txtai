@@ -1,5 +1,5 @@
 setup:
-	poetry config virtualenvs.path $$(pwd)/.venv && \
+	poetry config virtualenvs.in-project true && \
 		poetry install
 
 install: setup
