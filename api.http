@@ -1,0 +1,57 @@
+###---------------------------------------------
+# txtai stuff
+# index data
+curl -XPOST "http://localhost:8000/workflow" \
+    -H "Content-Type: application/json" \
+    -d '{"name": "index", 
+         "elements": [
+            "US tops 5 million confirmed virus cases",
+            "Canadas last fully intact ice shelf has suddenly collapsed, forming a Manhattan-sized iceberg",
+            "Beijing mobilises invasion craft along coast as Taiwan tensions escalate",
+            "The National Park Service warns against sacrificing slower friends in a bear attack",
+            "Maine man wins $1M from $25 lottery ticket",
+            "Make huge profits without work, earn up to $100,000 a day"
+            ]
+        }'
+###
+# search data
+curl -XPOST "http://localhost:8000/workflow" \
+    -H "Content-Type: application/json" \
+    -d '{"name": "search", 
+         "elements": [
+            "feel good story"]
+        }'
+
+###---------------------------------------------
+# weaviate stuff
+# get info about current Weaviate instance
+GET http://localhost:8080/v1/meta
+
+###
+# check weaviate nodes' health
+curl http://localhost:8080/v1/nodes
+
+###
+# get all objects in Weaviate
+GET http://localhost:8080/v1/objects
+
+###
+# get Weaviate schema
+GET http://localhost:8080/v1/schema
+
+###
+# get the content and vector representation of all Documents
+POST http://localhost:8080/v1/graphql
+X-Request-Type: GraphQL
+Content-Type: application/json
+
+query {
+  Get {
+    Post {
+        content
+        _additional {
+          vector
+        }
+    }
+  }
+}
