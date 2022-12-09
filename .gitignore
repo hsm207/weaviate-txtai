@@ -1,2 +1,3 @@
 !.gitignore
 poetry.lock
+dist
