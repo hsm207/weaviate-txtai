@@ -9,7 +9,7 @@ build:
 	poetry build
 
 publish: build
-	poetry publish --dry-run
+	poetry publish
 
 clean:
 	-rm -r dist
