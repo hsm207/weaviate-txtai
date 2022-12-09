@@ -1,0 +1,27 @@
+[tool.poetry]
+name = "weaviate-txtai"
+version = "0.1.0a1"
+description = "An integration of the weaviate vector search engine with txtai"
+authors = ["hsm207 <hsm207@users.noreply.github.com>"]
+readme = "README.md"
+packages = [{include = "weaviate_txtai"}]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: BSD License",
+    "Topic :: Database :: Database Engines/Servers",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence"
+
+]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+weaviate-client = "^3.9.0"
+txtai = {extras = ["api"], version = "^5.1.0"}
+
+[tool.poetry.dev-dependencies]
+pytest = "^7.2"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
