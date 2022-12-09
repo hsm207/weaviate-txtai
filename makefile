@@ -14,6 +14,9 @@ publish: build
 test:
 	poetry run pytest
 
+coverage:
+	poetry run coverage run -m pytest && \
+		poetry run coverage report -m
 clean:
 	-rm -r dist
 	-pip uninstall -y weaviate-txtai
