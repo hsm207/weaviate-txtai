@@ -1,6 +1,7 @@
 setup:
 	poetry config virtualenvs.in-project true && \
-		poetry install
+		poetry install && \
+		docker-compose pull
 
 install: setup
 	pip install --editable .
