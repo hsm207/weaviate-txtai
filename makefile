@@ -11,6 +11,9 @@ build:
 publish: build
 	poetry publish
 
+test:
+	poetry run pytest
+
 clean:
 	-rm -r dist
 	-pip uninstall -y weaviate-txtai
