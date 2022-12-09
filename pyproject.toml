@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "weaviate-txtai"
-version = "0.1.0a1"
+version = "0.1.0a2"
 description = "An integration of the weaviate vector search engine with txtai"
 authors = ["hsm207 <hsm207@users.noreply.github.com>"]
 readme = "README.md"
