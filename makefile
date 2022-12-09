@@ -17,6 +17,9 @@ test:
 coverage:
 	poetry run coverage run -m pytest && \
 		poetry run coverage report -m
+format:
+	poetry run black .
+	
 clean:
 	-rm -r dist
 	-pip uninstall -y weaviate-txtai
