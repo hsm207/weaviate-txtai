@@ -42,7 +42,7 @@ workflow:
       args: [search]
 ```
 
-Read this blog post for an end-to-end example.
+Read this [blog post](https://medium.com/@_init_/how-to-quickly-build-a-semantic-search-system-with-txtai-and-weaviate-fd4084e93aaa) for an end-to-end example.
 
 # Roadmap
     ¯\_(ツ)_/¯
