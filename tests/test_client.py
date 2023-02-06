@@ -110,6 +110,17 @@ def test_invalid_schema(weaviate_db):
     actual_exception_msg = str(e.value)
     assert expected_exception_msg in actual_exception_msg
 
+def test_index(weaviate_db, weaviate_client):
+
+    embeddings = Embeddings(
+        {
+            "path": "sentence-transformers/all-MiniLM-L6-v2",
+            "backend": "weaviate_txtai.ann.weaviate.Weaviate",
+        }
+    )
+
+    embeddings.index([(0, "Correct", None), (1, "Not what we hoped", None)])
+
 
 def test_index_workflow(app, weaviate_client):
     data = ["hello world"]
