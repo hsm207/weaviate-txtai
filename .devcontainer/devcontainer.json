@@ -26,7 +26,8 @@
 				"ms-python.black-formatter",
 				"eamodio.gitlens",
 				"GitHub.copilot",
-				"GitHub.copilot-labs"
+				"GitHub.copilot-labs",
+				"GitHub.vscode-pull-request-github"
 			]
 		}
 	}
