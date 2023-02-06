@@ -21,13 +21,13 @@
 	"customizations": {
 		"vscode": {
 			"extensions": [
-				"humao.rest-client",
-				"ms-python.python",
-				"ms-python.black-formatter",
-				"eamodio.gitlens",
 				"GitHub.copilot",
 				"GitHub.copilot-labs",
-				"GitHub.vscode-pull-request-github"
+				"GitHub.vscode-pull-request-github",
+				"eamodio.gitlens",
+				"humao.rest-client",
+				"ms-python.black-formatter",
+				"ms-python.python"
 			]
 		}
 	}
