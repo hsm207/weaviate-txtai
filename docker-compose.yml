@@ -2,7 +2,7 @@ version: '3.4'
 services:
 
   weaviate:
-    image: semitechnologies/weaviate:1.16.6
+    image: semitechnologies/weaviate:1.17.2
     ports:
     - 8080:8080
     environment:
