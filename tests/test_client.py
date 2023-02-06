@@ -8,6 +8,7 @@ from txtai.pipeline.nop import Nop
 from txtai.workflow import Task, Workflow
 
 from weaviate_txtai.client import Weaviate
+import weaviate_txtai.ann.weaviate as ann
 import weaviate
 
 WEAVIATE_DB_URL = "http://localhost:8080"
@@ -57,49 +58,29 @@ def app(weaviate_db):
 
 
 def test_default_schema(weaviate_db, weaviate_client):
-    workflow = """
-    weaviate_txtai.client.Weaviate:
+    default_schema = {
+        "class": "Document",
+        "properties": [{"name": "text", "dataType": ["text"]}],
+        "vectorIndexConfig": {"distance": "cosine"},
+    }
 
-    workflow:
-     simple:
-      tasks:
-       - action: weaviate_txtai.client.Weaviate
-    
-    """
+    config = {"weaviate": {"url": WEAVIATE_DB_URL}}
 
-    app = Application(workflow)
-    schema = weaviate_client.schema.get("Document")
-
-    assert schema["class"] == "Document"
-    assert any(
-        p["name"] == "content" and p["dataType"][0] == "text"
-        for p in schema["properties"]
-    )
-    assert schema["vectorIndexConfig"]["distance"] == "cosine"
+    ann_weaviate = ann.Weaviate(config)
+    assert weaviate_client.schema.contains(default_schema)
 
 
 def test_custom_schema(weaviate_db, weaviate_client):
-    workflow = """
-    weaviate_txtai.client.Weaviate:
-     custom_schema:
-      class: "Post"
-      properties:
-       - name: "content"
-         dataType:
-          - text
-      vectorIndexConfig:
-       distance: "dot"
+    custom_schema = {
+        "class": "Post",
+        "properties": [{"name": "content", "dataType": ["text"]}],
+        "vectorIndexConfig": {"distance": "dot"},
+    }
 
-    workflow:
-     simple:
-      tasks:
-       - action: weaviate_txtai.client.Weaviate
-    
-    """
+    config = {"weaviate": {"url": WEAVIATE_DB_URL, "schema": custom_schema}}
 
-    app = Application(workflow)
-    schema = weaviate_client.schema.get("Post")
-    assert schema["vectorIndexConfig"]["distance"] == "dot"
+    ann_weaviate = ann.Weaviate(config)
+    assert weaviate_client.schema.contains(custom_schema)
 
 
 def test_invalid_schema(weaviate_db):
