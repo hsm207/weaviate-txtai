@@ -7,7 +7,10 @@
 		"ghcr.io/devcontainers/features/docker-in-docker:2": {},
 		"ghcr.io/devcontainers-contrib/features/poetry:1": {}
 	},
-	"runArgs": ["--env-file",".devcontainer/devcontainer.env"],
+	"runArgs": [
+		"--env-file",
+		".devcontainer/devcontainer.env"
+	],
 	"mounts": [
 		{
 			"source": "${localWorkspaceFolder}/.venv",
@@ -17,22 +20,24 @@
 	],
 	"customizations": {
 		"vscode": {
-			"extensions": ["humao.rest-client", "ms-python.python", "ms-python.black-formatter", "eamodio.gitlens", "GitHub.copilot", "GitHub.copilot-labs"]
+			"extensions": [
+				"humao.rest-client",
+				"ms-python.python",
+				"ms-python.black-formatter",
+				"eamodio.gitlens",
+				"GitHub.copilot",
+				"GitHub.copilot-labs"
+			]
 		}
 	}
-
 	// Features to add to the dev container. More info: https://containers.dev/features.
 	// "features": {},
-
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
 	// "forwardPorts": [],
-
 	// Use 'postCreateCommand' to run commands after the container is created.
 	// "postCreateCommand": "pip3 install --user -r requirements.txt",
-
 	// Configure tool-specific properties.
 	// "customizations": {},
-
 	// Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
 	// "remoteUser": "root"
 }
