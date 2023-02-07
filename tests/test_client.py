@@ -2,14 +2,14 @@ import subprocess
 import time
 
 import pytest
+import weaviate
 from txtai.app import Application
 from txtai.embeddings import Embeddings
 from txtai.pipeline.nop import Nop
 from txtai.workflow import Task, Workflow
 
-from weaviate_txtai.client import Weaviate
 import weaviate_txtai.ann.weaviate as ann
-import weaviate
+from weaviate_txtai.client import Weaviate
 
 WEAVIATE_DB_URL = "http://localhost:8080"
 

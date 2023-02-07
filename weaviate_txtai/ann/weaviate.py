@@ -1,7 +1,8 @@
 import uuid
+
+from txtai.ann import ANN
 from weaviate import Client
 from weaviate.util import generate_uuid5
-from txtai.ann import ANN
 
 
 class Weaviate(ANN):
