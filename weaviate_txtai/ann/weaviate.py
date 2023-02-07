@@ -16,6 +16,10 @@ class Weaviate(ANN):
         self.client = Client(url)
 
         self._create_schema()
+        self._configure_client()
+
+    def _configure_client(self):
+        self.client.batch.configure(batch_size=100, num_workers=1)
 
     def _create_schema(self):
         schema = self.weaviate_config.get("schema", {})
