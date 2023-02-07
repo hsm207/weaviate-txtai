@@ -132,6 +132,28 @@ def test_index(weaviate_db, weaviate_client):
     assert all([obj["vector"] for obj in objects])
 
 
+def test_search(weaviate_db, weaviate_client):
+
+    embeddings = Embeddings(
+        {
+            "path": "sentence-transformers/all-MiniLM-L6-v2",
+            "backend": "weaviate_txtai.ann.weaviate.Weaviate",
+        }
+    )
+
+    embeddings.index(
+        [(0, "The quick brown fox", None), (1, "jumps over the lazy dog", None)]
+    )
+
+    # vixen is closer to the first sentence
+    result = embeddings.search("vixen", 10)
+    assert result[0][0] == 0
+
+    # puppy is closer to the second sentence
+    result = embeddings.search("puppy", 10)
+    assert result[0][0] == 1
+
+
 def test_index_workflow(app, weaviate_client):
     data = ["hello world"]
 

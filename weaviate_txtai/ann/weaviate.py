@@ -51,3 +51,21 @@ class Weaviate(ANN):
                 )
 
                 self.config["offset"] += 1
+
+    def search(self, queries, limit):
+
+        nearVector = {"vector": queries[0]}
+
+        results = (
+            self.client.query.get("Document")
+            .with_additional("distance")
+            .with_near_vector(nearVector)
+            .with_limit(limit)
+            .do()
+        )
+
+        results = results["data"]["Get"]["Document"]
+
+        return [
+            [(i, result["_additional"]["distance"]) for i, result in enumerate(results)]
+        ]
