@@ -1,5 +1,6 @@
+import uuid
 from weaviate import Client
-
+from weaviate.util import generate_uuid5
 from txtai.ann import ANN
 
 
@@ -15,6 +16,7 @@ class Weaviate(ANN):
         url = self.weaviate_config.get("url", "http://localhost:8080")
         self.client = Client(url)
 
+        self.config["offset"] = 0
         self._create_schema()
         self._configure_client()
 
@@ -33,3 +35,18 @@ class Weaviate(ANN):
             }
 
             self.client.schema.create_class(schema)
+
+    def index(self, embeddings):
+
+        with self.client.batch as batch:
+            for embedding in embeddings:
+                random_identifier = uuid.uuid4()
+                object_uuid = generate_uuid5(random_identifier)
+                batch.add_data_object(
+                    data_object={},
+                    class_name="Document",
+                    vector=embedding,
+                    uuid=object_uuid,
+                )
+
+                self.config["offset"] += 1

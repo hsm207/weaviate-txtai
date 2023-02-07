@@ -110,6 +110,7 @@ def test_invalid_schema(weaviate_db):
     actual_exception_msg = str(e.value)
     assert expected_exception_msg in actual_exception_msg
 
+
 def test_index(weaviate_db, weaviate_client):
 
     embeddings = Embeddings(
@@ -119,7 +120,16 @@ def test_index(weaviate_db, weaviate_client):
         }
     )
 
-    embeddings.index([(0, "Correct", None), (1, "Not what we hoped", None)])
+    embeddings.index([(0, "Lorem ipsum", None), (1, "dolor sit amet", None)])
+
+    assert embeddings.ann.config["offset"] == 2
+
+    results = weaviate_client.data_object.get(class_name="Document", with_vector=True)
+
+    assert results["totalResults"] == 2
+
+    objects = results["objects"]
+    assert all([obj["vector"] for obj in objects])
 
 
 def test_index_workflow(app, weaviate_client):
