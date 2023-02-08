@@ -61,7 +61,9 @@ class Weaviate(ANN):
                 random_identifier = uuid.uuid4()
                 object_uuid = generate_uuid5(random_identifier)
                 batch.add_data_object(
-                    data_object={},
+                    data_object={
+                        "docid": self.config["offset"],
+                    },
                     class_name="Document",
                     vector=embedding,
                     uuid=object_uuid,
@@ -74,7 +76,7 @@ class Weaviate(ANN):
         nearVector = {"vector": queries[0]}
 
         results = (
-            self.client.query.get("Document")
+            self.client.query.get("Document", properties=["docid"])
             .with_additional("distance")
             .with_near_vector(nearVector)
             .with_limit(limit)
@@ -84,5 +86,5 @@ class Weaviate(ANN):
         results = results["data"]["Get"]["Document"]
 
         return [
-            [(i, result["_additional"]["distance"]) for i, result in enumerate(results)]
+            [(result["docid"], result["_additional"]["distance"]) for result in results]
         ]
