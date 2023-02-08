@@ -1,12 +1,13 @@
 import uuid
 
+import weaviate
 from txtai.ann import ANN
 from weaviate import Client
 from weaviate.util import generate_uuid5
 
 DEFAULT_SCHEMA = {
     "class": "Document",
-    "properties": [{"name": "text", "dataType": ["text"]}],
+    "properties": [{"name": "docid", "dataType": ["int"]}],
     "vectorIndexConfig": {"distance": "cosine"},
 }
 
@@ -30,12 +31,28 @@ class Weaviate(ANN):
     def _configure_client(self):
         self.client.batch.configure(batch_size=100, num_workers=1)
 
+    def _is_valid_schema(self, schema):
+
+        docid_key = "docid"
+        docid_type = "int"
+        properties = schema["properties"]
+
+        weaviate.schema.validate_schema.check_class(schema)
+
+        for prop in properties:
+            if prop["name"] == docid_key and prop["dataType"][0] == docid_type:
+                return True
+
+        return False
+
     def _create_schema(self):
-        schema = self.weaviate_config.get("schema", {})
-        if schema:
-            self.client.schema.create_class(schema)
-        else:
-            self.client.schema.create_class(DEFAULT_SCHEMA)
+        schema = self.weaviate_config.get("schema", DEFAULT_SCHEMA)
+        if not self._is_valid_schema(schema):
+            raise weaviate.exceptions.SchemaValidationException(
+                f"Class {schema['class']} must have a property named 'docid' of type 'int'"
+            )
+
+        self.client.schema.create_class(schema)
 
     def index(self, embeddings):
 

@@ -34,7 +34,7 @@ def weaviate_client():
 def test_default_schema(weaviate_db, weaviate_client):
     default_schema = {
         "class": "Document",
-        "properties": [{"name": "text", "dataType": ["text"]}],
+        "properties": [{"name": "docid", "dataType": ["int"]}],
         "vectorIndexConfig": {"distance": "cosine"},
     }
 
@@ -47,7 +47,10 @@ def test_default_schema(weaviate_db, weaviate_client):
 def test_custom_schema(weaviate_db, weaviate_client):
     custom_schema = {
         "class": "Post",
-        "properties": [{"name": "content", "dataType": ["text"]}],
+        "properties": [
+            {"name": "content", "dataType": ["text"]},
+            {"name": "docid", "dataType": ["int"]},
+        ],
         "vectorIndexConfig": {"distance": "dot"},
     }
 
@@ -55,6 +58,18 @@ def test_custom_schema(weaviate_db, weaviate_client):
 
     ann_weaviate = ann.Weaviate(config)
     assert weaviate_client.schema.contains(custom_schema)
+
+
+def test_invalid_schema(weaviate_db):
+    invalid_schema = {
+        "class": "Article",
+        "properties": [{"name": "content", "dataType": ["text"]}],
+    }
+
+    config = {"weaviate": {"url": WEAVIATE_DB_URL, "schema": invalid_schema}}
+
+    with pytest.raises(weaviate.exceptions.SchemaValidationException):
+        ann.Weaviate(config)
 
 
 def test_index(weaviate_db, weaviate_client):
