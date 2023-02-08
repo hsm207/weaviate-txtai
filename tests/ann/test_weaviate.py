@@ -82,12 +82,13 @@ def test_index(weaviate_db, weaviate_client):
     )
 
     embeddings.index([(0, "Lorem ipsum", None), (1, "dolor sit amet", None)])
+    total_docs = 2
 
-    assert embeddings.ann.config["offset"] == 2
+    assert embeddings.ann.config["offset"] == total_docs
 
     results = weaviate_client.data_object.get(class_name="Document", with_vector=True)
 
-    assert results["totalResults"] == 2
+    assert results["totalResults"] == total_docs
 
     objects = results["objects"]
     assert all([obj["vector"] for obj in objects])
