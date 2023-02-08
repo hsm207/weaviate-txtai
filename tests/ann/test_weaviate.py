@@ -88,13 +88,21 @@ def test_search(weaviate_db, weaviate_client):
     )
 
     embeddings.index(
-        [(0, "The quick brown fox", None), (1, "jumps over the lazy dog", None)]
+        [
+            ("foo", "the quick brown fox", None),
+            ("bar", "jumps over the lazy dog", None),
+            ("baz", "Stock futures fall after post-Powell rally", None),
+        ]
     )
 
     # vixen is closer to the first sentence
-    result = embeddings.search("vixen", 10)
-    assert result[0][0] == 0
+    result = embeddings.search("vixen", 3)
+    assert result[0][0] == "foo"
 
     # puppy is closer to the second sentence
-    result = embeddings.search("puppy", 10)
-    assert result[0][0] == 1
+    result = embeddings.search("puppy", 3)
+    assert result[0][0] == "bar"
+
+    # financial markets are closer to the third sentence
+    result = embeddings.search("financial markets", 3)
+    assert result[0][0] == "baz"
