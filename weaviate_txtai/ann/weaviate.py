@@ -4,6 +4,12 @@ from txtai.ann import ANN
 from weaviate import Client
 from weaviate.util import generate_uuid5
 
+DEFAULT_SCHEMA = {
+    "class": "Document",
+    "properties": [{"name": "text", "dataType": ["text"]}],
+    "vectorIndexConfig": {"distance": "cosine"},
+}
+
 
 class Weaviate(ANN):
     """
@@ -29,13 +35,7 @@ class Weaviate(ANN):
         if schema:
             self.client.schema.create_class(schema)
         else:
-            schema = {
-                "class": "Document",
-                "properties": [{"name": "text", "dataType": ["text"]}],
-                "vectorIndexConfig": {"distance": "cosine"},
-            }
-
-            self.client.schema.create_class(schema)
+            self.client.schema.create_class(DEFAULT_SCHEMA)
 
     def index(self, embeddings):
 
