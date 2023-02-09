@@ -55,6 +55,9 @@ class Weaviate(ANN):
         self.client.schema.create_class(schema)
 
     def index(self, embeddings):
+        self.append(embeddings)
+
+    def append(self, embeddings):
 
         with self.client.batch as batch:
             for embedding in embeddings:
@@ -89,7 +92,7 @@ class Weaviate(ANN):
         return results["data"]["Get"]["Document"][0]["_additional"]["id"]
 
     def delete(self, ids):
-    
+
         for id in ids:
             # TODO: Rewrite when weaviate supports IN operator
             #       See: https://github.com/weaviate/weaviate/issues/2387
