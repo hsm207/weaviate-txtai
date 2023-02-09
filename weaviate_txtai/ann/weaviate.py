@@ -88,3 +88,12 @@ class Weaviate(ANN):
         return [
             [(result["docid"], result["_additional"]["distance"]) for result in results]
         ]
+
+    def save(self, path):
+        raise NotImplementedError(
+            """
+            Saving the index through txtai is not yet supported for the Weaviate backend.
+            Please use Weaviate's API instead.
+            See: https://weaviate.io/developers/weaviate/configuration/backups#introduction
+            """
+        )

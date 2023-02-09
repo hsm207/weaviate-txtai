@@ -126,3 +126,18 @@ def test_search(weaviate_db, weaviate_client):
     # financial markets are closer to the third sentence
     result = embeddings.search("financial markets", 3)
     assert result[0][0] == "baz"
+
+
+def test_save(weaviate_db):
+
+    embeddings = Embeddings(
+        {
+            "path": "sentence-transformers/all-MiniLM-L6-v2",
+            "backend": "weaviate_txtai.ann.weaviate.Weaviate",
+        }
+    )
+
+    embeddings.index([(0, "Lorem ipsum", None)])
+
+    with pytest.raises(NotImplementedError, match=r"not yet supported"):
+        embeddings.save("test")
