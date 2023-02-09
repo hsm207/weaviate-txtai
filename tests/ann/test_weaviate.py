@@ -16,14 +16,18 @@ WEAVIATE_DB_URL = "http://localhost:8080"
 
 @pytest.fixture
 def weaviate_db():
-    subprocess.run(["docker-compose", "up", "-d"], check=True, capture_output=True)
+    subprocess.run(
+        ["docker-compose", "-p", "weaviate_test_server", "up", "-d"],
+        check=True,
+        capture_output=True,
+    )
 
     # wait for deployment to be ready
     time.sleep(1)
 
     yield
 
-    subprocess.run(["docker-compose", "down"], check=True)
+    subprocess.run(["docker-compose", "-p", "weaviate_test_server", "down"], check=True)
 
 
 @pytest.fixture
