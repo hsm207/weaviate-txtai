@@ -71,6 +71,31 @@ class Weaviate(ANN):
 
                 self.config["offset"] += 1
 
+    def _get_uuid_from_docid(self, docid):
+
+        results = (
+            self.client.query.get("Document")
+            .with_additional("id")
+            .with_where(
+                {
+                    "path": ["docid"],
+                    "operator": "Equal",
+                    "valueInt": docid,
+                }
+            )
+            .do()
+        )
+
+        return results["data"]["Get"]["Document"][0]["_additional"]["id"]
+
+    def delete(self, ids):
+    
+        for id in ids:
+            # TODO: Rewrite when weaviate supports IN operator
+            #       See: https://github.com/weaviate/weaviate/issues/2387
+            uuid = self._get_uuid_from_docid(id)
+            self.client.data_object.delete(uuid, class_name="Document")
+
     def search(self, queries, limit):
 
         nearVector = {"vector": queries[0]}

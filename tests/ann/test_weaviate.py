@@ -154,3 +154,22 @@ def test_load(weaviate_db):
     with pytest.raises(NotImplementedError, match=r"not yet supported"):
         embeddings = Embeddings()
         embeddings.load("test")
+
+
+def test_delete(weaviate_db, weaviate_client):
+    embeddings = Embeddings(
+        {
+            "path": "sentence-transformers/all-MiniLM-L6-v2",
+            "backend": "weaviate_txtai.ann.weaviate.Weaviate",
+        }
+    )
+
+    embeddings.index([(0, "Lorem ipsum", None)])
+    objects = weaviate_client.data_object.get(class_name="Document")["objects"]
+
+    assert len(objects) == 1
+
+    embeddings.delete([0])
+    objects = weaviate_client.data_object.get(class_name="Document")["objects"]
+
+    assert len(objects) == 0
