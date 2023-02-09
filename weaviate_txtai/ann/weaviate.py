@@ -97,3 +97,12 @@ class Weaviate(ANN):
             See: https://weaviate.io/developers/weaviate/configuration/backups#introduction
             """
         )
+
+    def load(self, path):
+        raise NotImplementedError(
+            """
+            Loading the index through txtai is not yet supported for the Weaviate backend.
+            Please use Weaviate's API instead.
+            See: https://weaviate.io/developers/weaviate/configuration/backups#introduction
+            """
+        )

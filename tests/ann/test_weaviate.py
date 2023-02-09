@@ -141,3 +141,16 @@ def test_save(weaviate_db):
 
     with pytest.raises(NotImplementedError, match=r"not yet supported"):
         embeddings.save("test")
+
+
+def test_load(weaviate_db):
+    embeddings = Embeddings(
+        {
+            "path": "sentence-transformers/all-MiniLM-L6-v2",
+            "backend": "weaviate_txtai.ann.weaviate.Weaviate",
+        }
+    )
+
+    with pytest.raises(NotImplementedError, match=r"not yet supported"):
+        embeddings = Embeddings()
+        embeddings.load("test")
