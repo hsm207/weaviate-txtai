@@ -117,6 +117,10 @@ class Weaviate(ANN):
             [(result["docid"], result["_additional"]["distance"]) for result in results]
         ]
 
+    def count(self):
+        results = self.client.query.aggregate("Document").with_meta_count().do()
+        return results["data"]["Aggregate"]["Document"][0]["meta"]["count"]
+
     def save(self, path):
         raise NotImplementedError(
             """

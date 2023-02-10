@@ -64,6 +64,22 @@ def test_custom_schema(weaviate_db, weaviate_client):
     assert weaviate_client.schema.contains(custom_schema)
 
 
+
+
+def test_count(weaviate_db):
+    embeddings = Embeddings(
+        {
+            "path": "sentence-transformers/all-MiniLM-L6-v2",
+            "backend": "weaviate_txtai.ann.weaviate.Weaviate",
+        }
+    )
+
+    docs = [(0, "Lorem ipsum", None), (1, "dolor sit amet", None)]
+    embeddings.index(docs)
+
+    assert embeddings.count() == len(docs)
+
+
 def test_invalid_schema(weaviate_db):
     invalid_schema = {
         "class": "Article",
