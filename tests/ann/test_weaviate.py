@@ -9,7 +9,6 @@ from txtai.pipeline.nop import Nop
 from txtai.workflow import Task, Workflow
 
 import weaviate_txtai.ann.weaviate as ann
-from weaviate_txtai.client import Weaviate
 
 WEAVIATE_DB_URL = "http://localhost:8080"
 
