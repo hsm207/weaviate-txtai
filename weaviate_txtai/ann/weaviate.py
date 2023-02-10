@@ -106,7 +106,7 @@ class Weaviate(ANN):
     def delete(self, ids):
 
         for id in ids:
-            # TODO: Rewrite when weaviate supports IN operator
+            # TODO: rewrite when weaviate supports IN operator
             #       See: https://github.com/weaviate/weaviate/issues/2387
             uuid = self._get_uuid_from_docid(id)
             self.client.data_object.delete(uuid, class_name=self.index_name)
@@ -116,7 +116,7 @@ class Weaviate(ANN):
         nearVector = {"vector": queries[0]}
 
         # use distance to score similarity
-        # TODO: dicuss if this is the best way to do it
+        # TODO: discuss if this is the best way to do it
         #       in txtai, higher similarity score means more similar
         #       but in weaviate, lower distance means more similar
         results = (
