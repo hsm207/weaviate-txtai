@@ -43,7 +43,7 @@ def test_default_schema(weaviate_db, weaviate_client):
 
     config = {"weaviate": {"url": WEAVIATE_DB_URL}}
 
-    ann_weaviate = ann.Weaviate(config)
+    ann.Weaviate(config)
     assert weaviate_client.schema.contains(default_schema)
 
 
@@ -59,7 +59,7 @@ def test_custom_schema(weaviate_db, weaviate_client):
 
     config = {"weaviate": {"url": WEAVIATE_DB_URL, "schema": custom_schema}}
 
-    ann_weaviate = ann.Weaviate(config)
+    ann.Weaviate(config)
     assert weaviate_client.schema.contains(custom_schema)
 
 
@@ -101,6 +101,17 @@ def test_duplicate_schema(weaviate_db):
     with pytest.raises(ImportError):
         embeddings.index(docs)
 
+def test_invalid_schema(weaviate_db):
+    invalid_schema = {
+        "class": "Article",
+        "properties": [{"name": "content", "dataType": ["text"]}],
+    }
+
+    config = {"weaviate": {"url": WEAVIATE_DB_URL, "schema": invalid_schema}}
+
+    with pytest.raises(weaviate.exceptions.SchemaValidationException):
+        ann.Weaviate(config)
+
 
 def test_count(weaviate_db):
     embeddings = Embeddings(
@@ -116,16 +127,6 @@ def test_count(weaviate_db):
     assert embeddings.count() == len(docs)
 
 
-def test_invalid_schema(weaviate_db):
-    invalid_schema = {
-        "class": "Article",
-        "properties": [{"name": "content", "dataType": ["text"]}],
-    }
-
-    config = {"weaviate": {"url": WEAVIATE_DB_URL, "schema": invalid_schema}}
-
-    with pytest.raises(weaviate.exceptions.SchemaValidationException):
-        ann.Weaviate(config)
 
 
 def test_index(weaviate_db, weaviate_client):
