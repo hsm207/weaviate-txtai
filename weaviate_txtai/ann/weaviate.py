@@ -25,6 +25,7 @@ class Weaviate(ANN):
         self.client = Client(url)
 
         self.config["offset"] = 0
+        self.overwrite_index = self.weaviate_config.get("overwrite_index", True)
         self._create_schema()
         self._configure_client()
 
@@ -47,10 +48,19 @@ class Weaviate(ANN):
 
     def _create_schema(self):
         schema = self.weaviate_config.get("schema", DEFAULT_SCHEMA)
+
         if not self._is_valid_schema(schema):
             raise weaviate.exceptions.SchemaValidationException(
                 f"Class {schema['class']} must have a property named 'docid' of type 'int'"
             )
+
+        if self.client.schema.contains(schema):
+            if not self.overwrite_index:
+                raise weaviate.exceptions.ObjectAlreadyExistsException(
+                    f"Index {schema['class']} already exists"
+                )
+            else:
+                self.client.schema.delete_class(schema["class"])
 
         self.client.schema.create_class(schema)
 

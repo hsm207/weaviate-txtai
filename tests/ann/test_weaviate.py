@@ -64,6 +64,43 @@ def test_custom_schema(weaviate_db, weaviate_client):
     assert weaviate_client.schema.contains(custom_schema)
 
 
+def test_overwrite_schema(weaviate_db):
+
+    embeddings = Embeddings(
+        {
+            "path": "sentence-transformers/all-MiniLM-L6-v2",
+            "backend": "weaviate_txtai.ann.weaviate.Weaviate",
+        }
+    )
+
+    docs = [(0, "Lorem ipsum", None), (1, "dolor sit amet", None)]
+
+    embeddings.index(docs)
+    embeddings.index(docs)
+
+    assert embeddings.count() == len(docs)
+
+
+def test_duplicate_schema(weaviate_db):
+    weaviate_config = {"url": WEAVIATE_DB_URL, "overwrite_index": False}
+
+    embeddings = Embeddings(
+        {
+            "path": "sentence-transformers/all-MiniLM-L6-v2",
+            "backend": "weaviate_txtai.ann.weaviate.Weaviate",
+            "weaviate": weaviate_config,
+        }
+    )
+
+    docs = [(0, "Lorem ipsum", None), (1, "dolor sit amet", None)]
+
+    embeddings.index(docs)
+
+    # TODO: rewrite this to throw the correct exception if txtai txtai updates its exception handling
+    #       see: https://bit.ly/3RLAiih
+    # with pytest.raises(weaviate.exceptions.ObjectAlreadyExistsException, match = r"already exists"):
+    with pytest.raises(ImportError):
+        embeddings.index(docs)
 
 
 def test_count(weaviate_db):
