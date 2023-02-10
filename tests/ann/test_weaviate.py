@@ -34,6 +34,16 @@ def weaviate_client():
     yield weaviate.Client(WEAVIATE_DB_URL)
 
 
+@pytest.fixture
+def embeddings(weaviate_db):
+    yield Embeddings(
+        {
+            "path": "sentence-transformers/all-MiniLM-L6-v2",
+            "backend": "weaviate_txtai.ann.weaviate.Weaviate",
+        }
+    )
+
+
 def test_default_schema(weaviate_db, weaviate_client):
     default_schema = {
         "class": "Document",
@@ -63,14 +73,7 @@ def test_custom_schema(weaviate_db, weaviate_client):
     assert weaviate_client.schema.contains(custom_schema)
 
 
-def test_overwrite_schema(weaviate_db):
-
-    embeddings = Embeddings(
-        {
-            "path": "sentence-transformers/all-MiniLM-L6-v2",
-            "backend": "weaviate_txtai.ann.weaviate.Weaviate",
-        }
-    )
+def test_overwrite_schema(embeddings):
 
     docs = [(0, "Lorem ipsum", None), (1, "dolor sit amet", None)]
 
@@ -101,6 +104,7 @@ def test_duplicate_schema(weaviate_db):
     with pytest.raises(ImportError):
         embeddings.index(docs)
 
+
 def test_invalid_schema(weaviate_db):
     invalid_schema = {
         "class": "Article",
@@ -113,13 +117,7 @@ def test_invalid_schema(weaviate_db):
         ann.Weaviate(config)
 
 
-def test_count(weaviate_db):
-    embeddings = Embeddings(
-        {
-            "path": "sentence-transformers/all-MiniLM-L6-v2",
-            "backend": "weaviate_txtai.ann.weaviate.Weaviate",
-        }
-    )
+def test_count(embeddings):
 
     docs = [(0, "Lorem ipsum", None), (1, "dolor sit amet", None)]
     embeddings.index(docs)
@@ -127,19 +125,12 @@ def test_count(weaviate_db):
     assert embeddings.count() == len(docs)
 
 
+def test_index(embeddings, weaviate_client):
 
+    docs = [(0, "Lorem ipsum", None), (1, "dolor sit amet", None)]
+    total_docs = len(docs)
 
-def test_index(weaviate_db, weaviate_client):
-
-    embeddings = Embeddings(
-        {
-            "path": "sentence-transformers/all-MiniLM-L6-v2",
-            "backend": "weaviate_txtai.ann.weaviate.Weaviate",
-        }
-    )
-
-    embeddings.index([(0, "Lorem ipsum", None), (1, "dolor sit amet", None)])
-    total_docs = 2
+    embeddings.index(docs)
 
     assert embeddings.ann.config["offset"] == total_docs
 
@@ -151,14 +142,7 @@ def test_index(weaviate_db, weaviate_client):
     assert all([obj["vector"] for obj in objects])
 
 
-def test_search(weaviate_db, weaviate_client):
-
-    embeddings = Embeddings(
-        {
-            "path": "sentence-transformers/all-MiniLM-L6-v2",
-            "backend": "weaviate_txtai.ann.weaviate.Weaviate",
-        }
-    )
+def test_search(embeddings):
 
     embeddings.index(
         [
@@ -181,14 +165,7 @@ def test_search(weaviate_db, weaviate_client):
     assert result[0][0] == "baz"
 
 
-def test_save(weaviate_db):
-
-    embeddings = Embeddings(
-        {
-            "path": "sentence-transformers/all-MiniLM-L6-v2",
-            "backend": "weaviate_txtai.ann.weaviate.Weaviate",
-        }
-    )
+def test_save(embeddings):
 
     embeddings.index([(0, "Lorem ipsum", None)])
 
@@ -196,26 +173,14 @@ def test_save(weaviate_db):
         embeddings.save("test")
 
 
-def test_load(weaviate_db):
-    embeddings = Embeddings(
-        {
-            "path": "sentence-transformers/all-MiniLM-L6-v2",
-            "backend": "weaviate_txtai.ann.weaviate.Weaviate",
-        }
-    )
+def test_load(embeddings):
 
     with pytest.raises(NotImplementedError, match=r"not yet supported"):
         embeddings = Embeddings()
         embeddings.load("test")
 
 
-def test_delete(weaviate_db, weaviate_client):
-    embeddings = Embeddings(
-        {
-            "path": "sentence-transformers/all-MiniLM-L6-v2",
-            "backend": "weaviate_txtai.ann.weaviate.Weaviate",
-        }
-    )
+def test_delete(embeddings, weaviate_client):
 
     embeddings.index([(0, "Lorem ipsum", None)])
     objects = weaviate_client.data_object.get(class_name="Document")["objects"]
