@@ -26,6 +26,7 @@ class Weaviate(ANN):
 
         self.config["offset"] = 0
         self.overwrite_index = self.weaviate_config.get("overwrite_index", True)
+        self.index_name = None
         self._create_schema()
         self._configure_client()
 
@@ -63,6 +64,7 @@ class Weaviate(ANN):
                 self.client.schema.delete_class(schema["class"])
 
         self.client.schema.create_class(schema)
+        self.index_name = schema["class"]
 
     def index(self, embeddings):
         self.append(embeddings)
@@ -77,7 +79,7 @@ class Weaviate(ANN):
                     data_object={
                         "docid": self.config["offset"],
                     },
-                    class_name="Document",
+                    class_name=self.index_name,
                     vector=embedding,
                     uuid=object_uuid,
                 )
@@ -87,7 +89,7 @@ class Weaviate(ANN):
     def _get_uuid_from_docid(self, docid):
 
         results = (
-            self.client.query.get("Document")
+            self.client.query.get(self.index_name)
             .with_additional("id")
             .with_where(
                 {
@@ -99,7 +101,7 @@ class Weaviate(ANN):
             .do()
         )
 
-        return results["data"]["Get"]["Document"][0]["_additional"]["id"]
+        return results["data"]["Get"][self.index_name][0]["_additional"]["id"]
 
     def delete(self, ids):
 
@@ -107,29 +109,29 @@ class Weaviate(ANN):
             # TODO: Rewrite when weaviate supports IN operator
             #       See: https://github.com/weaviate/weaviate/issues/2387
             uuid = self._get_uuid_from_docid(id)
-            self.client.data_object.delete(uuid, class_name="Document")
+            self.client.data_object.delete(uuid, class_name=self.index_name)
 
     def search(self, queries, limit):
 
         nearVector = {"vector": queries[0]}
 
         results = (
-            self.client.query.get("Document", properties=["docid"])
+            self.client.query.get(self.index_name, properties=["docid"])
             .with_additional("distance")
             .with_near_vector(nearVector)
             .with_limit(limit)
             .do()
         )
 
-        results = results["data"]["Get"]["Document"]
+        results = results["data"]["Get"][self.index_name]
 
         return [
             [(result["docid"], result["_additional"]["distance"]) for result in results]
         ]
 
     def count(self):
-        results = self.client.query.aggregate("Document").with_meta_count().do()
-        return results["data"]["Aggregate"]["Document"][0]["meta"]["count"]
+        results = self.client.query.aggregate(self.index_name).with_meta_count().do()
+        return results["data"]["Aggregate"][self.index_name][0]["meta"]["count"]
 
     def save(self, path):
         raise NotImplementedError(
