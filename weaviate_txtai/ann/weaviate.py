@@ -115,6 +115,10 @@ class Weaviate(ANN):
 
         nearVector = {"vector": queries[0]}
 
+        # use distance to score similarity
+        # TODO: dicuss if this is the best way to do it
+        #       in txtai, higher similarity score means more similar
+        #       but in weaviate, lower distance means more similar
         results = (
             self.client.query.get(self.index_name, properties=["docid"])
             .with_additional("distance")
