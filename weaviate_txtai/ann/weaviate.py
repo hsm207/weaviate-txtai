@@ -4,6 +4,15 @@ import weaviate
 from txtai.ann import ANN
 from weaviate import Client
 from weaviate.util import generate_uuid5
+import logging
+
+logger = logging.getLogger(__name__)
+formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+ch = logging.StreamHandler()
+ch.setLevel(logging.DEBUG)
+ch.setFormatter(formatter)
+logger.addHandler(ch)
+
 
 DEFAULT_SCHEMA = {
     "class": "Document",
@@ -21,6 +30,20 @@ DEFAULT_BATCH_CONFIG = {
     "dynamic": False,
     "num_workers": 1,
 }
+
+
+def check_index_exists(func):
+    def wrapper(self, *args, **kwargs):
+        try:
+            self.client.schema.get(self.index_name)
+            return func(self, *args, **kwargs)
+        except weaviate.exceptions.UnexpectedStatusCodeException:
+            logger.error(
+                f'Unable to find index "{self.index_name}" in weaviate. Aborting call to {func.__name__}'
+            )
+            raise
+
+    return wrapper
 
 
 class Weaviate(ANN):
@@ -135,6 +158,7 @@ class Weaviate(ANN):
 
         return results["data"]["Get"][self.index_name][0]["_additional"]["id"]
 
+    @check_index_exists
     def delete(self, ids):
 
         for id in ids:
@@ -143,6 +167,7 @@ class Weaviate(ANN):
             uuid = self._get_uuid_from_docid(id)
             self.client.data_object.delete(uuid, class_name=self.index_name)
 
+    @check_index_exists
     def search(self, queries, limit):
 
         nearVector = {"vector": queries[0]}
@@ -165,6 +190,7 @@ class Weaviate(ANN):
             [(result["docid"], result["_additional"]["distance"]) for result in results]
         ]
 
+    @check_index_exists
     def count(self):
         results = self.client.query.aggregate(self.index_name).with_meta_count().do()
         return results["data"]["Aggregate"][self.index_name][0]["meta"]["count"]

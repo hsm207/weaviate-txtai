@@ -210,3 +210,13 @@ def test_client_batch_config(weaviate_db):
     assert backend.client.batch._connection_error_retries == 3
     assert backend.client.batch._batch_size == 64
     assert backend.client.batch.dynamic == True
+
+
+def test_index_exists(embeddings, weaviate_client):
+
+    embeddings.index([(0, "Lorem ipsum", None)])
+    assert embeddings.count() == 1
+
+    weaviate_client.schema.delete_class("Document")
+    with pytest.raises(weaviate.exceptions.UnexpectedStatusCodeException):
+        embeddings.count()
