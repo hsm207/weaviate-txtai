@@ -14,7 +14,7 @@ DEFAULT_SCHEMA = {
 
 class Weaviate(ANN):
     """
-    Builds an ANN index using the Faiss Library
+    Builds an ANN index using the Weaviate vector search engine
     """
 
     def __init__(self, config):
