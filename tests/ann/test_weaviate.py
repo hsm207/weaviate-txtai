@@ -191,3 +191,22 @@ def test_delete(embeddings, weaviate_client):
     objects = weaviate_client.data_object.get(class_name="Document")["objects"]
 
     assert len(objects) == 0
+
+
+def test_client_batch_config(weaviate_db):
+    config = {
+        "weaviate": {
+            "url": WEAVIATE_DB_URL,
+            "batch": {
+                "batch_size": 64,
+                "dynamic": True,
+            },
+        }
+    }
+
+    backend = ann.Weaviate(config)
+
+    assert backend.client.batch._num_workers == 1
+    assert backend.client.batch._connection_error_retries == 3
+    assert backend.client.batch._batch_size == 64
+    assert backend.client.batch.dynamic == True

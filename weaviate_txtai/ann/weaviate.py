@@ -11,6 +11,17 @@ DEFAULT_SCHEMA = {
     "vectorIndexConfig": {"distance": "cosine"},
 }
 
+DEFAULT_BATCH_CONFIG = {
+    "batch_size": None,
+    "creation_time": None,
+    "timeout_retries": 3,
+    "connection_error_retries": 3,
+    "weaviate_error_retries": None,
+    "callback": None,
+    "dynamic": False,
+    "num_workers": 1,
+}
+
 
 class Weaviate(ANN):
     """
@@ -28,10 +39,31 @@ class Weaviate(ANN):
         self.overwrite_index = self.weaviate_config.get("overwrite_index", True)
         self.index_name = None
         self._create_schema()
-        self._configure_client()
 
-    def _configure_client(self):
-        self.client.batch.configure(batch_size=100, num_workers=1)
+        batch_config = self.weaviate_config.get("batch", DEFAULT_BATCH_CONFIG)
+        self._configure_client(**batch_config)
+
+    def _configure_client(
+        self,
+        batch_size=None,
+        creation_time=None,
+        timeout_retries=3,
+        connection_error_retries=3,
+        weaviate_error_retries=None,
+        callback=None,
+        dynamic=False,
+        num_workers=1,
+    ):
+        self.client.batch.configure(
+            batch_size,
+            creation_time,
+            timeout_retries,
+            connection_error_retries,
+            weaviate_error_retries,
+            callback,
+            dynamic,
+            num_workers,
+        )
 
     def _is_valid_schema(self, schema):
 
