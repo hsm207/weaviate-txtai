@@ -165,19 +165,19 @@ def test_search(embeddings):
     assert result[0][0] == "baz"
 
 
-def test_save(embeddings):
+def test_save_and_load(embeddings, caplog, tmp_path):
+
+    savefile = str(tmp_path / "test")
 
     embeddings.index([(0, "Lorem ipsum", None)])
 
-    with pytest.raises(NotImplementedError, match=r"not yet supported"):
-        embeddings.save("test")
+    embeddings.save(savefile)
 
+    assert "save method has no effect" in caplog.text
 
-def test_load(embeddings):
+    embeddings.load(savefile)
 
-    with pytest.raises(NotImplementedError, match=r"not yet supported"):
-        embeddings = Embeddings()
-        embeddings.load("test")
+    assert "load method has no effect" in caplog.text
 
 
 def test_delete(embeddings, weaviate_client):

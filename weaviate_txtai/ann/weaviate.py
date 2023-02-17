@@ -196,19 +196,21 @@ class Weaviate(ANN):
         return results["data"]["Aggregate"][self.index_name][0]["meta"]["count"]
 
     def save(self, path):
-        raise NotImplementedError(
+
+        logger.warning(
             """
-            Saving the index through txtai is not yet supported for the Weaviate backend.
-            Please use Weaviate's API instead.
+            The save method has no effect on the embeddings stored in Weaviate.
+            Please use Weaviate's Backup API if you would like to save the embeddings.
             See: https://weaviate.io/developers/weaviate/configuration/backups#introduction
             """
         )
 
     def load(self, path):
-        raise NotImplementedError(
+
+        logger.warning(
             """
-            Loading the index through txtai is not yet supported for the Weaviate backend.
-            Please use Weaviate's API instead.
+            The load method has no effect on the embeddings stored in Weaviate.
+            Please use Weaviate's Backup API if you would like to load the embeddings.
             See: https://weaviate.io/developers/weaviate/configuration/backups#introduction
             """
         )
