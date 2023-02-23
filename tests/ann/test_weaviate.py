@@ -72,6 +72,19 @@ def test_custom_schema(weaviate_db, weaviate_client):
     assert weaviate_client.schema.contains(custom_schema)
 
 
+def test_invalid_distance_metric(weaviate_db):
+    invalid_schema = {
+        "class": "Article",
+        "properties": [{"name": "docid", "dataType": ["int"]}],
+        "vectorIndexConfig": {"distance": "dot"},
+    }
+
+    config = {"weaviate": {"url": WEAVIATE_DB_URL, "schema": invalid_schema}}
+
+    with pytest.raises(weaviate.exceptions.SchemaValidationException):
+        ann.Weaviate(config)
+
+
 def test_overwrite_schema(embeddings):
 
     docs = [(0, "Lorem ipsum", None), (1, "dolor sit amet", None)]

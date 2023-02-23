@@ -93,8 +93,10 @@ class Weaviate(ANN):
         docid_key = "docid"
         docid_type = "int"
         properties = schema["properties"]
+        distance_metric = schema.get("vectorIndexConfig", {}).get("distance", "cosine")
 
-        weaviate.schema.validate_schema.check_class(schema)
+        if distance_metric != "cosine":
+            return False
 
         for prop in properties:
             if prop["name"] == docid_key and prop["dataType"][0] == docid_type:
@@ -107,7 +109,7 @@ class Weaviate(ANN):
 
         if not self._is_valid_schema(schema):
             raise weaviate.exceptions.SchemaValidationException(
-                f"Class {schema['class']} must have a property named 'docid' of type 'int'"
+                f"Class {schema['class']} must have a property named 'docid' of type 'int' and distance metric 'cosine'"
             )
 
         if self.client.schema.contains(schema):
