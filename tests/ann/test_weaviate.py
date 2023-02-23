@@ -64,7 +64,6 @@ def test_custom_schema(weaviate_db, weaviate_client):
             {"name": "content", "dataType": ["text"]},
             {"name": "docid", "dataType": ["int"]},
         ],
-        "vectorIndexConfig": {"distance": "dot"},
     }
 
     config = {"weaviate": {"url": WEAVIATE_DB_URL, "schema": custom_schema}}
