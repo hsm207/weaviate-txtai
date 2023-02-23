@@ -232,3 +232,8 @@ def test_index_exists(embeddings, weaviate_client):
     weaviate_client.schema.delete_class("Document")
     with pytest.raises(weaviate.exceptions.UnexpectedStatusCodeException):
         embeddings.count()
+
+
+def test_normalize_cosine_distance():
+    assert ann.normalize_cosine_distance(0.0) == 1.0
+    assert ann.normalize_cosine_distance(2.0) == -1.0

@@ -14,6 +14,12 @@ ch.setFormatter(formatter)
 logger.addHandler(ch)
 
 
+def normalize_cosine_distance(cosine_distance):
+    # weaviate's cosine distance is 1 - cos(x) similarity
+    # but txtai uses cos(x) for similiarity similarity
+    return 1 - cosine_distance
+
+
 DEFAULT_SCHEMA = {
     "class": "Document",
     "properties": [{"name": "docid", "dataType": ["int"]}],
@@ -189,7 +195,13 @@ class Weaviate(ANN):
         results = results["data"]["Get"][self.index_name]
 
         return [
-            [(result["docid"], result["_additional"]["distance"]) for result in results]
+            [
+                (
+                    result["docid"],
+                    normalize_cosine_distance(result["_additional"]["distance"]),
+                )
+                for result in results
+            ]
         ]
 
     @check_index_exists
