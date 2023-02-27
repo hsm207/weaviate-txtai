@@ -95,7 +95,7 @@ def test_overwrite_schema(embeddings):
     assert embeddings.count() == len(docs)
 
 
-def test_duplicate_schema(weaviate_db):
+def test_duplicate_schema(weaviate_db, caplog):
     weaviate_config = {"url": WEAVIATE_DB_URL, "overwrite_index": False}
 
     embeddings = Embeddings(
@@ -109,12 +109,9 @@ def test_duplicate_schema(weaviate_db):
     docs = [(0, "Lorem ipsum", None), (1, "dolor sit amet", None)]
 
     embeddings.index(docs)
+    embeddings.index(docs)
 
-    # TODO: rewrite this to throw the correct exception if txtai txtai updates its exception handling
-    #       see: https://bit.ly/3RLAiih
-    # with pytest.raises(weaviate.exceptions.ObjectAlreadyExistsException, match = r"already exists"):
-    with pytest.raises(ImportError):
-        embeddings.index(docs)
+    assert "already exists" in caplog.text
 
 
 def test_invalid_schema(weaviate_db):
@@ -177,7 +174,7 @@ def test_search(embeddings):
     assert result[0][0] == "baz"
 
 
-def test_save_and_load(embeddings, caplog, tmp_path):
+def test_save_and_load_overwrite(embeddings, caplog, tmp_path):
 
     savefile = str(tmp_path / "test")
 
@@ -190,6 +187,29 @@ def test_save_and_load(embeddings, caplog, tmp_path):
     embeddings.load(savefile)
 
     assert "load method has no effect" in caplog.text
+
+
+def test_save_and_load_reuse(weaviate_db, weaviate_client, tmp_path):
+
+    savefile = str(tmp_path / "test")
+
+    old_embeddings = Embeddings(
+        {
+            "path": "sentence-transformers/all-MiniLM-L6-v2",
+            "backend": "weaviate_txtai.ann.weaviate.Weaviate",
+            "weaviate": {"url": WEAVIATE_DB_URL, "overwrite_index": False},
+        }
+    )
+
+    old_embeddings.index([(0, "Lorem ipsum", None)])
+    old_shard_name = weaviate_client.schema.get_class_shards("Document")[0]["name"]
+    old_embeddings.save(savefile)
+
+    new_embeddings = Embeddings()
+    new_embeddings.load(savefile)
+    new_shard_name = weaviate_client.schema.get_class_shards("Document")[0]["name"]
+
+    assert new_shard_name == old_shard_name
 
 
 def test_delete(embeddings, weaviate_client):

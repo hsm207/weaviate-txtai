@@ -120,13 +120,14 @@ class Weaviate(ANN):
 
         if self.client.schema.contains(schema):
             if not self.overwrite_index:
-                raise weaviate.exceptions.ObjectAlreadyExistsException(
-                    f"Index {schema['class']} already exists"
+                logger.warning(
+                    f"Index {schema['class']} already exists. Skipping creation."
                 )
             else:
                 self.client.schema.delete_class(schema["class"])
+        else:
+            self.client.schema.create_class(schema)
 
-        self.client.schema.create_class(schema)
         self.index_name = schema["class"]
 
     def index(self, embeddings):
