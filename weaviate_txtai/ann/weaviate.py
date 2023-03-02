@@ -64,7 +64,7 @@ class Weaviate(ANN):
         url = self.weaviate_config.get("url", "http://localhost:8080")
         self.client = Client(url)
 
-        self.config["offset"] = 0
+        self.config["offset"] = self.config.get("offset", 0)
         self.overwrite_index = self.weaviate_config.get("overwrite_index", True)
         self.index_name = None
         self._create_schema()
@@ -95,7 +95,6 @@ class Weaviate(ANN):
         )
 
     def _is_valid_schema(self, schema):
-
         docid_key = "docid"
         docid_type = "int"
         properties = schema["properties"]
@@ -134,7 +133,6 @@ class Weaviate(ANN):
         self.append(embeddings)
 
     def append(self, embeddings):
-
         with self.client.batch as batch:
             for embedding in embeddings:
                 random_identifier = uuid.uuid4()
@@ -151,7 +149,6 @@ class Weaviate(ANN):
                 self.config["offset"] += 1
 
     def _get_uuid_from_docid(self, docid):
-
         results = (
             self.client.query.get(self.index_name)
             .with_additional("id")
@@ -169,7 +166,6 @@ class Weaviate(ANN):
 
     @check_index_exists
     def delete(self, ids):
-
         for id in ids:
             # TODO: rewrite when weaviate supports IN operator
             #       See: https://github.com/weaviate/weaviate/issues/2387
@@ -178,7 +174,6 @@ class Weaviate(ANN):
 
     @check_index_exists
     def search(self, queries, limit):
-
         nearVector = {"vector": queries[0]}
 
         # use distance to score similarity
@@ -211,7 +206,6 @@ class Weaviate(ANN):
         return results["data"]["Aggregate"][self.index_name][0]["meta"]["count"]
 
     def save(self, path):
-
         logger.warning(
             """
             The save method has no effect on the embeddings stored in Weaviate.
@@ -221,7 +215,6 @@ class Weaviate(ANN):
         )
 
     def load(self, path):
-
         logger.warning(
             """
             The load method has no effect on the embeddings stored in Weaviate.
