@@ -64,7 +64,7 @@ class Weaviate(ANN):
         url = self.weaviate_config.get("url", "http://localhost:8080")
         self.client = Client(url)
 
-        self.config["offset"] = 0
+        self.config["offset"] = self.config.get("offset", 0)
         self.overwrite_index = self.weaviate_config.get("overwrite_index", True)
         self.index_name = None
         self._create_schema()
