@@ -86,7 +86,6 @@ def test_invalid_distance_metric(weaviate_db):
 
 
 def test_overwrite_schema(embeddings):
-
     docs = [(0, "Lorem ipsum", None), (1, "dolor sit amet", None)]
 
     embeddings.index(docs)
@@ -127,7 +126,6 @@ def test_invalid_schema(weaviate_db):
 
 
 def test_count(embeddings):
-
     docs = [(0, "Lorem ipsum", None), (1, "dolor sit amet", None)]
     embeddings.index(docs)
 
@@ -135,7 +133,6 @@ def test_count(embeddings):
 
 
 def test_index(embeddings, weaviate_client):
-
     docs = [(0, "Lorem ipsum", None), (1, "dolor sit amet", None)]
     total_docs = len(docs)
 
@@ -152,7 +149,6 @@ def test_index(embeddings, weaviate_client):
 
 
 def test_search(embeddings):
-
     embeddings.index(
         [
             ("foo", "the quick brown fox", None),
@@ -175,7 +171,6 @@ def test_search(embeddings):
 
 
 def test_save_and_load_overwrite(embeddings, caplog, tmp_path):
-
     savefile = str(tmp_path / "test")
 
     embeddings.index([(0, "Lorem ipsum", None)])
@@ -190,7 +185,6 @@ def test_save_and_load_overwrite(embeddings, caplog, tmp_path):
 
 
 def test_save_and_load_reuse(weaviate_db, weaviate_client, tmp_path):
-
     savefile = str(tmp_path / "test")
 
     old_embeddings = Embeddings(
@@ -213,7 +207,6 @@ def test_save_and_load_reuse(weaviate_db, weaviate_client, tmp_path):
 
 
 def test_delete(embeddings, weaviate_client):
-
     embeddings.index([(0, "Lorem ipsum", None)])
     objects = weaviate_client.data_object.get(class_name="Document")["objects"]
 
@@ -245,7 +238,6 @@ def test_client_batch_config(weaviate_db):
 
 
 def test_index_exists(embeddings, weaviate_client):
-
     embeddings.index([(0, "Lorem ipsum", None)])
     assert embeddings.count() == 1
 
@@ -282,6 +274,7 @@ def test_upsert(embeddings, weaviate_client):
     new_uid = embeddings.search("feel good story", 1)[0][0]
 
     assert old_uid == new_uid
+
 
 def test_upsert_with_new_embeddings(weaviate_db, weaviate_client, tmp_path):
     savefile = str(tmp_path / "test")
